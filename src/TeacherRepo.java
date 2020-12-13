@@ -1,7 +1,16 @@
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.*;
 import java.util.Properties;
 
 public class TeacherRepo {
+    private String url;
+
+    public TeacherRepo(String url) {
+        this.url = url;
+    }
+
     public void displayAllTeachers() {
         String url = "jdbc:mysql://localhost:3306/cr7_wong";
 
@@ -18,7 +27,7 @@ public class TeacherRepo {
                     String Name = resultSet.getString("NAME");
                     String Surname = resultSet.getString("Surname");
                     int Teacher_ID = resultSet.getInt("Teacher_ID");
-                    System.out.println(Teacher_ID + "" + Name + "" + Surname);
+                    System.out.println(Teacher_ID + " " + Name + " " + Surname);
                 }
             }
         } catch (SQLException e) {
@@ -52,7 +61,7 @@ public class TeacherRepo {
                 if (resultSet.next()) {
                     String Name = resultSet.getString("NAME");
                     String Surname = resultSet.getString("Surname");
-                    System.out.println("ID" + " " + teacherId +":" + " " + "Teacher" + " " + Name + " "+ Surname + " " +"teaches");
+                    System.out.println("ID" + " " + teacherId + ":" + " " + "Teacher" + " " + Name + " " + Surname + " " + "teaches");
 
                     do {
                         String className = resultSet.getString("Class_Name");
@@ -68,6 +77,30 @@ public class TeacherRepo {
                 }
             }
         } catch (SQLException e) {
+            e.printStackTrace(System.err);
+        }
+    }
+
+    public void createAllTeachersReport(File outputFilePath) {
+
+        Properties properties = new Properties();
+        properties.put("user", "root");
+        properties.put("password", "");
+
+        try (Connection connection = DriverManager.getConnection(url, properties)) {
+
+            String sql = "SELECT NAME, Surname,Email,Teacher_ID  FROM teacher";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            try (ResultSet resultSet = statement.executeQuery();
+                 FileWriter writer = new FileWriter(outputFilePath)) {
+                while (resultSet.next()) {
+                    String Name = resultSet.getString("NAME");
+                    String Surname = resultSet.getString("Surname");
+                    String Class_ID = resultSet.getString("Teacher_ID");
+                    writer.write(Class_ID + ":" + Name + ";" + Surname + ";" + '\n');
+                }
+            }
+        } catch (SQLException | IOException e) {
             e.printStackTrace(System.err);
         }
     }
