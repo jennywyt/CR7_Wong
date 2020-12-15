@@ -1,9 +1,10 @@
+import java.io.File;
 import java.util.Scanner;
 
-public class main {
-    static StudentRepo studentRepo = new StudentRepo();
-    private static TeacherRepo teacherRepo = new TeacherRepo();
-    private static ClassRepo classRepo = new ClassRepo();
+public class menu {
+    static StudentRepo studentRepo = new StudentRepo("jdbc:mysql://localhost:3306/cr7_wong");
+    private static TeacherRepo teacherRepo = new TeacherRepo("jdbc:mysql://localhost:3306/cr7_wong");
+    private static ClassRepo classRepo = new ClassRepo("jdbc:mysql://localhost:3306/cr7_wong");
 
     public static void main(String[] args) {
 
@@ -13,7 +14,7 @@ public class main {
 
         do {
             printMenu();
-            userInput = getUserInput(4, "your service");
+            userInput = getUserInput(7, "your service");
             switch (userInput) {
                 case 1:
                     displayAllStudents();
@@ -28,19 +29,44 @@ public class main {
                     displayTeacherInfoByID();
                     break;
                 case 5:
-                    createReport();
+                    createStudentReport();
+                    break;
+                case 6:
+                    createTeacherReport();
+                    break;
+                case 7:
+                    createStudentPerClassReport();
+                    break;
 
             }
         } while (userInput != 0);
     }
 
-    private static void createReport() {
+    private static void createStudentPerClassReport() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Please input the path of the output file: ");
+        File outputFileName = new File(scanner.nextLine());
+        classRepo.createStudentPerClassReport(outputFileName);
+    }
+
+    private static void createTeacherReport() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Please input the path of the output file: ");
+        File outputFileName = new File(scanner.nextLine());
+        teacherRepo.createAllTeachersReport(outputFileName);
+    }
+
+    private static void createStudentReport() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Please input the path of the output file: ");
+        File outputFileName = new File(scanner.nextLine());
+        studentRepo.createAllStudentsReport(outputFileName);
     }
 
     private static void displayTeacherInfoByID() {
 
         Scanner scanner = new Scanner(System.in);
-        int teacherId= -1;
+        int teacherId = -1;
         while (teacherId < 0) {
             try {
                 System.out.println("Please input a Teacher ID: ");
@@ -93,7 +119,8 @@ public class main {
         System.out.println("2: Display all teachers");
         System.out.println("3: Display all classes");
         System.out.println("4: Display teacher info by ID");
-        System.out.println("5: Create Report");
-
+        System.out.println("5: Create All Student Report");
+        System.out.println("6: Create All Teacher Report");
+        System.out.println("7: Create Student Per Class Report");
     }
 }
